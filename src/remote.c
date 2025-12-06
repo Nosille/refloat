@@ -49,6 +49,27 @@ void remote_input(Remote *remote, const RefloatConfig *config) {
         connected = remote.age_s < 1;
         break;
     }
+    case (INPUTTILT_ADC): {
+        value = 0.0;
+        connected = true;
+        if(config->limit_adc1 > config->fault_adc1) {
+            float adc1Value = VESC_IF->io_read_analog(VESC_PIN_ADC1);
+            if (adc1Value > config->limit_adc1) {
+                value += 1.0;
+            } else if (adc1Value > config->fault_adc1) {
+                value += (adc1Value - config->fault_adc1) / (config->limit_adc1 - config->fault_adc1);
+            }
+        }
+        if(config->limit_adc2 > config->fault_adc2) {
+            float adc2Value = VESC_IF->io_read_analog(VESC_PIN_ADC2);
+            if (adc2Value > config->limit_adc2) {
+                value -= 1.0;
+            } else if(adc2Value > config->fault_adc2) {
+                value -= (adc2Value - config->fault_adc2) / (config->limit_adc2 - config->fault_adc2);
+            }
+        }
+        break;
+    }   
     case (INPUTTILT_NONE):
         break;
     }

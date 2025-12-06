@@ -24,7 +24,8 @@
 typedef enum {
     INPUTTILT_NONE = 0,
     INPUTTILT_UART,
-    INPUTTILT_PPM
+    INPUTTILT_PPM,
+    INPUTTILT_ADC
 } FLOAT_INPUTTILT_REMOTE_TYPE;
 
 typedef enum {
@@ -219,6 +220,8 @@ typedef struct {
     float fault_roll;
     float fault_adc1;
     float fault_adc2;
+    float limit_adc1;
+    float limit_adc2;
     uint16_t fault_delay_pitch;
     uint16_t fault_delay_roll;
     uint16_t fault_delay_switch_half;
