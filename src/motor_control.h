@@ -42,6 +42,9 @@ typedef struct {
     float click_current;
     ParkingBrakeMode parking_brake_mode;
     uint16_t main_freq;
+
+    float can_age_limit;
+    uint16_t can_follower_id;
 } MotorControl;
 
 void motor_control_init(MotorControl *mc);

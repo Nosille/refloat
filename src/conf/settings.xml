@@ -3961,6 +3961,46 @@ p, li { white-space: pre-wrap; }
             <cDefine>CFG_DFLT_META_IS_DEFAULT</cDefine>
             <valInt>1</valInt>
         </meta.is_default>
+        <can_age_limit>
+            <longName>Wait Time for CAN msg</longName>
+            <type>2</type>
+            <transmittable>1</transmittable>
+            <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Check status of other VESCs on the CAN-bus.  Only send control commands when status update is newer than this value in seconds.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
+            <cDefine>CFG_DFLT_CAN_AGE_LIMIT</cDefine>
+            <editorScale>1</editorScale>
+            <editAsPercentage>0</editAsPercentage>
+            <maxInt>10000</maxInt>
+            <minInt>0</minInt>
+            <showDisplay>0</showDisplay>
+            <stepInt>100</stepInt>
+            <valInt>100</valInt>
+            <suffix> ms</suffix>
+            <vTx>3</vTx>
+        </can_age_limit>
+        <can_follower_id>
+            <longName>ID for VESC Follower Motor Over CAN</longName>
+            <type>2</type>
+            <transmittable>1</transmittable>
+            <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Mirror all motor balance commands to the VESC with this id.  Notice that the application only has to be set up on the master VESC.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
+            <cDefine>CFG_DFLT_CAN_FOLLOWER_ID</cDefine>
+            <editorScale>1</editorScale>
+            <editAsPercentage>0</editAsPercentage>
+            <maxInt>1000</maxInt>
+            <minInt>0</minInt>
+            <showDisplay>0</showDisplay>
+            <stepInt>1</stepInt>
+            <valInt>115</valInt>
+            <suffix> </suffix>
+            <vTx>3</vTx>
+        </can_follower_id>        
     </Params>
     <SerOrder>
         <ser>kp</ser>
@@ -4132,6 +4172,8 @@ p, li { white-space: pre-wrap; }
         <ser>bms.cell_lt_threshold</ser>
         <ser>bms.bms_ht_threshold</ser>
         <ser>meta.is_default</ser>
+        <ser>can_age_limit</ser>
+        <ser>can_follower_id</ser>
     </SerOrder>
     <Grouping>
         <group>
@@ -4399,6 +4441,14 @@ p, li { white-space: pre-wrap; }
                     <param>bms.bms_ht_threshold</param>
                 </subgroupParams>
             </subgroup>
+            <subgroup>
+                <subgroupName>Multi ESC</subgroupName>
+                <subgroupParams>
+                    <param>::sep::Multi ESC</param>
+                    <param>can_age_limit</param>
+                    <param>can_follower_id</param>
+                </subgroupParams>
+            </subgroup>            
         </group>
         <group>
             <groupName>Internal</groupName>

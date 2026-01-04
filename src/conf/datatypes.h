@@ -305,6 +305,8 @@ typedef struct {
     bool is_beeper_enabled;
     bool is_dutybeep_enabled;
     bool is_footbeep_enabled;
+    uint16_t can_age_limit;
+    uint16_t can_follower_id;
 
     CfgHapticFeedback haptic;
     CfgBMS bms;

@@ -39,6 +39,8 @@ void motor_control_configure(MotorControl *mc, const RefloatConfig *config) {
     mc->click_current = config->startup_click_current;
     mc->parking_brake_mode = config->parking_brake_mode;
     mc->main_freq = config->hertz / 2;
+    mc->can_age_limit = config->can_age_limit / 1000;
+    mc->can_follower_id = config->can_follower_id;
 }
 
 void motor_control_request_current(MotorControl *mc, float current) {
@@ -58,6 +60,12 @@ void motor_control_apply(MotorControl *mc, float abs_erpm, RunState state, const
             // set 0A only once to reset any previously-set current, then stop touching the motor
             VESC_IF->mc_set_current(0.0f);
             mc->disabled = true;
+            if(mc->can_follower_id > 0){
+                can_status_msg *msg =  VESC_IF->can_get_status_msg_id(mc->can_follower_id);
+                if (msg->id == mc->can_follower_id && VESC_IF->ts_to_age_s(msg->rx_time) < mc->can_age_limit) {
+                    VESC_IF->can_set_current(mc->can_follower_id, 0.0);
+                }
+            }
         }
         return;
     } else {
@@ -97,6 +105,12 @@ void motor_control_apply(MotorControl *mc, float abs_erpm, RunState state, const
         // Keep modulation on for 50ms in case we request close-to-0 current
         VESC_IF->mc_set_current_off_delay(0.05f);
         VESC_IF->mc_set_current(mc->requested_current);
+        if(mc->can_follower_id > 0) {
+            can_status_msg *msg =  VESC_IF->can_get_status_msg_id(mc->can_follower_id);
+            if (msg->id == mc->can_follower_id && VESC_IF->ts_to_age_s(msg->rx_time) < mc->can_age_limit) {
+                VESC_IF->can_set_current(mc->can_follower_id, mc->requested_current);
+            }
+        }
     } else {
         // Brake logic
         if (abs_erpm > ERPM_MOVING_THRESHOLD) {
@@ -106,15 +120,34 @@ void motor_control_apply(MotorControl *mc, float abs_erpm, RunState state, const
         if (timer_older(time, mc->brake_timer, 1)) {
             // Release the motor by setting zero current
             VESC_IF->mc_set_current(0.0f);
+            if(mc->can_follower_id > 0) {
+                can_status_msg *msg =  VESC_IF->can_get_status_msg_id(mc->can_follower_id);
+                if (msg->id == mc->can_follower_id && VESC_IF->ts_to_age_s(msg->rx_time) < mc->can_age_limit) {
+                    VESC_IF->can_set_current(mc->can_follower_id, 0.0f);
+                }
+            }
             return;
         }
 
         if (mc->parking_brake_active && abs_erpm < 2000) {
             // Duty Cycle mode has better holding power (phase-shorting on 6.05)
             VESC_IF->mc_set_duty(0);
+            if(mc->can_follower_id > 0) 
+            {
+                can_status_msg *msg =  VESC_IF->can_get_status_msg_id(mc->can_follower_id);
+                if (msg->id == mc->can_follower_id && VESC_IF->ts_to_age_s(msg->rx_time) < mc->can_age_limit) {
+                    VESC_IF->can_set_duty(mc->can_follower_id, 0);
+                }
+            }
         } else {
             // Use brake current over certain ERPM to avoid MOSFET overcurrent
             VESC_IF->mc_set_brake_current(mc->brake_current);
+            if(mc->can_follower_id > 0) {
+                can_status_msg *msg =  VESC_IF->can_get_status_msg_id(mc->can_follower_id);
+                if (msg->id == mc->can_follower_id && VESC_IF->ts_to_age_s(msg->rx_time) < mc->can_age_limit) {
+                    VESC_IF->can_set_current_brake(mc->can_follower_id, mc->brake_current);
+                }
+            }
         }
     }
 
